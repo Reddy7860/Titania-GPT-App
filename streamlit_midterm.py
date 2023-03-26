@@ -141,7 +141,7 @@ signal_highlight = alt.Chart(new_df).mark_rule(
 
 st.altair_chart((candlestick + signal_highlight).properties(
 title={
-"text": [f"Candlestick and Cumulative Gains for {selected_strategy} Strategy ({selected_date})"],
+"text": [f"Closing price of Nifty w/ {selected_strategy} Strategy ({selected_date})"],
 "subtitle": ["Price vs. Time"]
 }
 ).configure_axis(
@@ -163,23 +163,11 @@ if len(datetimes) > 0:
 		signal = filtered_df[filtered_df['Datetime'] == datetime]['Signal'].iloc[0]
 		buy_probability = filtered_df[filtered_df['Datetime'] == datetime]['buy_probability'].iloc[0]
 		sell_probability = filtered_df[filtered_df['Datetime'] == datetime]['sell_probability'].iloc[0]
-		value = filtered_df[filtered_df['Datetime'] == datetime]['Value'].iloc[0]
-		st.write(f"- {datetime}: {signal} {buy_probability} {sell_probability}{value}")
-		if signal == selected_strategy:
-			signal_highlight_chart = alt.Chart(pd.DataFrame({'Datetime': [datetime]})).mark_point(
-			shape='triangle-up',
-			size=100,
-			fill='yellow',
-			stroke='black',
-			strokeWidth=1
-			).encode(
-			x='Datetime:T',
-			y='High:Q',
-			tooltip=['Signal','buy_probability','sell_probability']
-			)
-			st.altair_chart(signal_highlight_chart, use_container_width=True)
-		else:
-			st.write("No data available for selected filters.")
+		value = round(filtered_df[filtered_df['Datetime'] == datetime]['Value'].iloc[0],2)
+		st.write(f"- {datetime}: {signal}")
+		st.write(f"  Buy probability: {buy_probability}")
+		st.write(f"  Sell probability: {sell_probability}")
+		st.write(f"  Value: {value}")
 
 # stocks = sorted(df['Stock'].astype(str).unique())
 # indicators = ['SMA_Call', 'RSI_Call', 'MACD_Call', 'Pivot_Call', 'PCR_Call', 'BB_Call', 'VWAP_Call', 'SuperTrend_Call']
