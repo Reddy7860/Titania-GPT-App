@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
 from pandas.tseries.offsets import CustomBusinessDay, CustomBusinessMonthEnd
-# import plotly.express as px
-# import plotly.graph_objs as go
-# from plotly.subplots import make_subplots
-# import matplotlib.pyplot as plt
-# from mpl_finance import candlestick_ohlc
-# from matplotlib.dates import date2num
-# import mpl_finance
-# import matplotlib.dates as mdates
+import plotly.express as px
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
+from mpl_finance import candlestick_ohlc
+from matplotlib.dates import date2num
+import mpl_finance
+import matplotlib.dates as mdates
 import altair as alt
 import datetime as dt
 
@@ -22,18 +22,14 @@ strategies = [s for s in strategies if str(s) != 'nan' and s != 'Select All']
 
 strategies.insert(0, "Select All")  # Add "Select All" option to strategy filter
 
+
 # Sidebar filters/inputs
 st.sidebar.title("Filter Data")
-selected_strategy = st.sidebar.selectbox("Select a Strategy", strategies)
-
-# Filter data by selected strategy
-if selected_strategy == "Select All":
-    filtered_df = df
-else:
-    filtered_df = df[df['Strategy'] == selected_strategy]
+selected_strategy = st.sidebar.selectbox("Select a Strategy", strategies, index=strategies.index("Reds Brahmos"))
 
 # Get unique dates in filtered dataframe
-dates = sorted(filtered_df['Date'].unique())
+filtered_df = df[df['Strategy'] == selected_strategy]
+dates = sorted(filtered_df['Date'].unique(), reverse=True)
 
 # Select date
 selected_date = st.selectbox("Select a Date", dates)
@@ -69,11 +65,25 @@ candle_df['Datetime'] = pd.to_datetime(candle_df['Datetime'])
 # Subtract 1.5 hours from each datetime value
 candle_df['Datetime'] = candle_df['Datetime'] - dt.timedelta(hours=1, minutes=30)
 
+# # Create plot of candlestick and cumulative gains
+# candlestick = alt.Chart(candle_df).mark_bar().encode(
+#     x='Datetime:T',
+#     y=alt.Y('Open', axis=alt.Axis(title='Price'), scale=alt.Scale(domain=[y_min, y_max])),
+#     y2='Close',
+#     color=alt.condition(
+#         alt.datum.color == 'green',
+#         alt.value('green'),
+#         alt.value('red')
+#     )
+# ).properties(
+#     width=800,
+#     height=300
+# )
+
 # Create plot of candlestick and cumulative gains
-candlestick = alt.Chart(candle_df).mark_bar().encode(
+candlestick = alt.Chart(candle_df).mark_line().encode(
     x='Datetime:T',
     y=alt.Y('Open', axis=alt.Axis(title='Price'), scale=alt.Scale(domain=[y_min, y_max])),
-    y2='Close',
     color=alt.condition(
         alt.datum.color == 'green',
         alt.value('green'),
@@ -104,16 +114,27 @@ new_df = filtered_df.copy()
 # Subtract 7 hours from each datetime value
 new_df['Datetime'] = new_df['Datetime'] - dt.timedelta(hours=7)
 
+print(new_df.columns)
+
+# # Combine charts
+# signal_highlight = alt.Chart(new_df).mark_point(
+#     shape='triangle-up',
+#     size=100,
+#     fill='yellow',
+#     stroke='black',
+#     strokeWidth=1
+# ).encode(
+#     x='Datetime:T',
+#     y='High:Q',
+#     tooltip=['Signal', 'Datetime']
+# )
+
 # Combine charts
-signal_highlight = alt.Chart(new_df).mark_point(
-    shape='triangle-up',
-    size=100,
-    fill='yellow',
-    stroke='black',
-    strokeWidth=1
+signal_highlight = alt.Chart(new_df).mark_rule(
+    color='orange',
+    strokeDash=[5, 5]
 ).encode(
-    x='Datetime:T',
-    y='High:Q',
+    y=alt.Y('Value:Q', axis=alt.Axis(title='Value')),
     tooltip=['Signal', 'Datetime']
 )
 
@@ -134,13 +155,16 @@ width=800
 ).interactive(), use_container_width=True)
 
 datetimes = sorted(filtered_df['Datetime'].unique(), reverse=True)
+
+
 if len(datetimes) > 0:
 	st.write(f"List of signals for {selected_strategy} strategy:")
 	for datetime in datetimes:
 		signal = filtered_df[filtered_df['Datetime'] == datetime]['Signal'].iloc[0]
 		buy_probability = filtered_df[filtered_df['Datetime'] == datetime]['buy_probability'].iloc[0]
 		sell_probability = filtered_df[filtered_df['Datetime'] == datetime]['sell_probability'].iloc[0]
-		st.write(f"- {datetime}: {signal}")
+		value = filtered_df[filtered_df['Datetime'] == datetime]['Value'].iloc[0]
+		st.write(f"- {datetime}: {signal} {buy_probability} {sell_probability}{value}")
 		if signal == selected_strategy:
 			signal_highlight_chart = alt.Chart(pd.DataFrame({'Datetime': [datetime]})).mark_point(
 			shape='triangle-up',
@@ -457,8 +481,6 @@ if len(datetimes) > 0:
 
 # # Show plot
 # st.pyplot(fig)
-
-
 
 
 # # Define available filters/inputs
