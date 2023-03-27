@@ -165,11 +165,32 @@ if len(datetimes) > 0:
 		sell_probability = filtered_df[filtered_df['Datetime'] == datetime]['sell_probability'].iloc[0]
 		value = round(filtered_df[filtered_df['Datetime'] == datetime]['Value'].iloc[0],2)
 		p_and_l = round(filtered_df[filtered_df['Datetime'] == datetime]['cumulative_gains'].iloc[0],2)
+		
+		sma_call = filtered_df[filtered_df['Datetime'] == datetime]['SMA_Call'].iloc[0]
+		rsi_call = filtered_df[filtered_df['Datetime'] == datetime]['RSI_Call'].iloc[0]
+		macd_call = filtered_df[filtered_df['Datetime'] == datetime]['MACD_Call'].iloc[0]
+		pivot_call = filtered_df[filtered_df['Datetime'] == datetime]['Pivot_Call'].iloc[0]
+		pcr_call = filtered_df[filtered_df['Datetime'] == datetime]['PCR_Call'].iloc[0]
+		
+		bb_call = filtered_df[filtered_df['Datetime'] == datetime]['BB_Call'].iloc[0]
+		vwap_call = filtered_df[filtered_df['Datetime'] == datetime]['VWAP_Call'].iloc[0]
+		supertrend_call = filtered_df[filtered_df['Datetime'] == datetime]['SuperTrend_Call'].iloc[0]
+		
 		st.write(f"- {datetime}: {signal}")
 		st.write(f"  Buy probability: {buy_probability}")
 		st.write(f"  Sell probability: {sell_probability}")
 		st.write(f"  Signal Value: {value}")
 		st.write(f"  P&L: {p_and_l}")
+		
+		st.write(f"- sma_call: {sma_call}")
+		st.write(f"  rsi_call: {rsi_call}")
+		st.write(f"  macd_call: {macd_call}")
+		st.write(f"  pivot_call: {pivot_call}")
+		st.write(f"  pcr_call: {pcr_call}")
+		
+		st.write(f"- bb_call: {bb_call}")
+		st.write(f"  vwap_call: {vwap_call}")
+		st.write(f"  supertrend_call: {supertrend_call}")
 		
 
 # stocks = sorted(df['Stock'].astype(str).unique())
