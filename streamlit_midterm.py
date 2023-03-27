@@ -164,10 +164,13 @@ if len(datetimes) > 0:
 		buy_probability = filtered_df[filtered_df['Datetime'] == datetime]['buy_probability'].iloc[0]
 		sell_probability = filtered_df[filtered_df['Datetime'] == datetime]['sell_probability'].iloc[0]
 		value = round(filtered_df[filtered_df['Datetime'] == datetime]['Value'].iloc[0],2)
+		p_and_l = round(filtered_df[filtered_df['Datetime'] == datetime]['cumulative_gains'].iloc[0],2)
 		st.write(f"- {datetime}: {signal}")
 		st.write(f"  Buy probability: {buy_probability}")
 		st.write(f"  Sell probability: {sell_probability}")
 		st.write(f"  Value: {value}")
+		st.write(f"  P&L: {p_and_l}")
+		
 
 # stocks = sorted(df['Stock'].astype(str).unique())
 # indicators = ['SMA_Call', 'RSI_Call', 'MACD_Call', 'Pivot_Call', 'PCR_Call', 'BB_Call', 'VWAP_Call', 'SuperTrend_Call']
