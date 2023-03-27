@@ -168,7 +168,7 @@ if len(datetimes) > 0:
 		st.write(f"- {datetime}: {signal}")
 		st.write(f"  Buy probability: {buy_probability}")
 		st.write(f"  Sell probability: {sell_probability}")
-		st.write(f"  Value: {value}")
+		st.write(f"  Signal Value: {value}")
 		st.write(f"  P&L: {p_and_l}")
 		
 
